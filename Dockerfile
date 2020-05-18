@@ -1,7 +1,11 @@
 # Version 1.0 template-transformer-simple
 
-FROM agpipeline/gantry-base-image:latest
+FROM ubuntu:18.04
+
 LABEL maintainer="Emmanuel Gonzalez <emmanuelgonzalez@email.arizona.edu>"
+
+WORKDIR /opt
+COPY . /opt
 
 COPY requirements.txt packages.txt /home/extractor/
 
@@ -27,6 +31,4 @@ RUN [ -s /home/extractor/requirements.txt ] && \
     (echo "No python modules to install" && \
     rm /home/extractor/requirements.txt)
 
-USER extractor
-
-COPY *.py /home/extractor/
+ENTRYPOINT [ "/usr/bin/python3", "/opt/plot_clip.py" ]
