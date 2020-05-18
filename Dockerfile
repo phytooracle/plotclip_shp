@@ -11,27 +11,30 @@ COPY requirements.txt packages.txt /home/extractor/
 
 USER root
 
+RUN apt-get update
+
 RUN apt-get install -y python3.6-dev \
-                       python3-pip
+                       python3-pip \
+                       wget \
+                       gdal-bin \
+                       libgdal-dev \
+                       libspatialindex-dev \
+                       build-essential \
+                       software-properties-common \
+                       apt-utils \
+                       pdal \
+                       liblas-bin
 
-RUN [ -s /home/extractor/packages.txt ] && \
-    (echo 'Installing packages' && \
-        apt-get update && \
-        cat /home/extractor/packages.txt | xargs apt-get install -y --no-install-recommends && \
-        rm /home/extractor/packages.txt && \
-        apt-get autoremove -y && \
-        apt-get clean && \
-        rm -rf /var/lib/apt/lists/*) || \
-    (echo 'No packages to install' && \
-        rm /home/extractor/packages.txt)
-
-RUN [ -s /home/extractor/requirements.txt ] && \
-    (echo "Install python modules" && \
-    python3 -m pip install -U --no-cache-dir pip && \
-    python3 -m pip install --no-cache-dir setuptools && \
-    python3 -m pip install --no-cache-dir -r /home/extractor/requirements.txt && \
-    rm /home/extractor/requirements.txt) || \
-    (echo "No python modules to install" && \
-    rm /home/extractor/requirements.txt)
+RUN add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+RUN apt-get update
+RUN apt-get install -y libgdal-dev
+RUN pip3 install -r requirements.txt
+RUN wget http://download.osgeo.org/libspatialindex/spatialindex-src-1.7.1.tar.gz
+RUN tar -xvf spatialindex-src-1.7.1.tar.gz
+RUN cd spatialindex-src-1.7.1/ && ./configure && make && make install
+RUN ldconfig
+RUN add-apt-repository ppa:ubuntugis/ppa
+RUN export CPLUS_INCLUDE_PATH=/usr/include/gdal
+RUN export C_INCLUDE_PATH=/usr/include/gdal
 
 ENTRYPOINT [ "/usr/bin/python3", "/opt/plot_clip.py" ]
