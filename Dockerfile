@@ -12,7 +12,7 @@ COPY requirements.txt packages.txt /home/extractor/
 USER root
 
 RUN apt-get install -y python3.6-dev \
-                       python3-pip \
+                       python3-pip
 
 RUN [ -s /home/extractor/packages.txt ] && \
     (echo 'Installing packages' && \
