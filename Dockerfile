@@ -12,7 +12,6 @@ COPY requirements.txt packages.txt /home/extractor/
 USER root
 
 RUN apt-get update
-
 RUN apt-get install -y python3.6-dev \
                        python3-pip \
                        wget \
@@ -24,7 +23,6 @@ RUN apt-get install -y python3.6-dev \
                        apt-utils \
                        pdal \
                        liblas-bin
-
 RUN add-apt-repository ppa:ubuntugis/ubuntugis-unstable
 RUN apt-get update
 RUN apt-get install -y libgdal-dev
