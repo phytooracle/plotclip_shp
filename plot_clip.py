@@ -25,7 +25,7 @@ import datetime
 import os
 from typing import Optional
 import copy
-#mport configuration
+
 
 # --------------------------------------------------
 def get_args():
@@ -276,15 +276,10 @@ def find_plots_intersect_boundingbox(bounding_box, all_plots, fullmac=True):
     bb_sr = bbox_poly.GetSpatialReference()
     intersecting_plots = dict()
 
-#     for plotname in all_plots:
-# #         if fullmac and (plotname.find("KSU") > -1 or plotname.endswith(" E") or plotname.endswith(" W")):
-# #             continue
     for index, row in all_plots.iterrows():
         bounds = str(row.geometry)
-        #bounds = all_plots[plotname]
 
         yaml_bounds = yaml.safe_load(bounds)
-        #current_poly = ogr.CreateGeometryFromJson(json.dumps(yaml_bounds))
         current_poly = ogr.CreateGeometryFromWkt(yaml_bounds)
         # Check for a need to convert coordinate systems
         check_poly = current_poly
@@ -341,8 +336,8 @@ def calculate_overlap_percent(check_bounds: str, bounding_box: str) -> float:
         If an exception is detected, a warning message is logged and 0.0 is returned.
     """
     try:
-        check_poly = ogr.CreateGeometryFromJson(str(check_bounds))
-        bbox_poly = ogr.CreateGeometryFromJson(str(bounding_box))
+        check_poly = ogr.CreateGeometryFromWkt(str(check_bounds))
+        bbox_poly = ogr.CreateGeometryFromJson(bounding_box)
 
         if check_poly and bbox_poly:
             intersection = bbox_poly.Intersection(check_poly)
@@ -363,7 +358,6 @@ def geojson_to_tuples(bounding_box: str) -> tuple:
         A tuple containing the bounds in (min Y, max Y, min X, max X) order
     """
 
-    #yaml_geom = yaml.safe_load(bounding_box)
     current_geom = ogr.CreateGeometryFromJson(bounding_box)
     current_env = current_geom.GetEnvelope()
 
@@ -379,7 +373,6 @@ def to_tuples(bounding_box: str) -> tuple:
         A tuple containing the bounds in (min Y, max Y, min X, max X) order
     """
 
-    #yaml_geom = yaml.safe_load(bounding_box)
     current_geom = ogr.CreateGeometryFromWkt(bounding_box)
     current_env = current_geom.GetEnvelope()
 
@@ -452,12 +445,8 @@ def clip_raster_intersection(file_path: str, file_bounds: str, plot_bounds: str,
 # --------------------------------------------------
 def main():
     args = get_args()
-    #file_list = glob.glob('/mnt/c/Users/emman/Documents/psII_dimen_corr_test/*.tif', recursive=True)
     file_list = glob.glob(f'{args.dir}/*.tif', recursive=True) + glob.glob(f'{args.dir}/*.las', recursive=True)
-    print(file_list)
-    #sensor = 'ps2Top'
     sensor = args.sensor
-    #default_epsg = '4326'
     default_epsg = args.epsg
 
     processed_files = 0
@@ -478,7 +467,6 @@ def main():
                 file_path = files_to_process[filename]['path']
                 file_bounds = files_to_process[filename]['bounds']
                 sensor = files_to_process[filename]['sensor_name']
-                #print(file_bounds)
 
                 overlap_plots = find_plots_intersect_boundingbox(file_bounds, all_plots)
                 file_spatial_ref = get_spatial_reference_from_json(file_bounds)
@@ -487,6 +475,9 @@ def main():
                     print(plot_name)
                     processed_plots += 1
                     plot_bounds = convert_json_geometry(overlap_plots[plot_name], file_spatial_ref)
+                    if calculate_overlap_percent(plot_bounds, file_bounds) < 0.10:
+                        continue
+
                     tuples = to_tuples(plot_bounds)
 
                     if filename.endswith('.tif'):
