@@ -475,7 +475,7 @@ def main():
                     print(plot_name)
                     processed_plots += 1
                     plot_bounds = convert_json_geometry(overlap_plots[plot_name], file_spatial_ref)
-                    if calculate_overlap_percent(plot_bounds, file_bounds) < 0.10:
+                    if calculate_overlap_percent(plot_bounds, file_bounds) < 0.05:
                         continue
 
                     tuples = to_tuples(plot_bounds)
