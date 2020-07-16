@@ -35,10 +35,15 @@ def get_args():
         description='Rock the Casbah',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('dir',
-                        metavar='dir',
+    # parser.add_argument('dir',
+    #                     metavar='dir',
+    #                     type=str,
+    #                     help='Input directory')
+
+    parser.add_argument('tif',
+                        metavar='tif',
                         type=str,
-                        help='Input directory')
+                        help='TIF file to clip')
 
     parser.add_argument('-sen',
                         '--sensor',
@@ -106,7 +111,7 @@ def get_files_to_process(file_list: list, sensor: str, default_epsg: int = None)
     return files_to_process
 
 
-# --------------------------------------------------
+#--------------------------------------------------
 def get_las_epsg_from_header(header: liblas.header.Header) -> str:
     """Returns the found EPSG code from the LAS header
     Arguments:
@@ -445,7 +450,8 @@ def clip_raster_intersection(file_path: str, file_bounds: str, plot_bounds: str,
 # --------------------------------------------------
 def main():
     args = get_args()
-    file_list = glob.glob(f'{args.dir}/*.tif', recursive=True) + glob.glob(f'{args.dir}/*.las', recursive=True)
+    #file_list = glob.glob(f'{args.dir}/*.tif', recursive=True) + glob.glob(f'{args.dir}/*.las', recursive=True)
+    file_list = [args.tif]
     sensor = args.sensor
     default_epsg = args.epsg
 
