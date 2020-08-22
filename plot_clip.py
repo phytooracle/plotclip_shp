@@ -485,7 +485,7 @@ def main():
 
                     if filename.endswith('.tif'):
                         out_dir = args.outdir
-                        out_path = os.path.join(out_dir, plot_name)
+                        out_path = os.path.join(out_dir, str(plot_name))
 
                         if not os.path.isdir(out_path):
                             os.makedirs(out_path)
