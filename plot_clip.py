@@ -36,10 +36,9 @@ def get_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('tif',
-                        nargs='+',
                         metavar='tif',
                         type=str,
-                        help='TIF file to clip')
+                        help='Single geoTIFF image or directory path containing geoTIFF images')
 
     parser.add_argument('-sen',
                         '--sensor',
@@ -447,8 +446,12 @@ def clip_raster_intersection(file_path: str, file_bounds: str, plot_bounds: str,
 def main():
     args = get_args()
     #file_list = glob.glob(f'{args.dir}/*.tif', recursive=True) + glob.glob(f'{args.dir}/*.las', recursive=True)
-    file_list = args.tif
-    print(file_list)
+    mod_path = args.tif + '/'
+    file_list = glob.glob(f'{mod_path}*.tif')
+
+    if not file_list:
+        file_list = [args.tif]
+
     sensor = args.sensor
     default_epsg = args.epsg
 
