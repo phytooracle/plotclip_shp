@@ -33,4 +33,4 @@ USER extractor
 
 COPY *.py /home/extractor/
 
-ENTRYPOINT [ "/usr/bin/python3", "/opt/plot_clip.py" ]
+ENTRYPOINT [ "python3", "/opt/plot_clip.py" ]
